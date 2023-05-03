@@ -31,9 +31,7 @@ fn player_add_hash(users: &mut HashSet<Player>) {
         }
     }
 }
-fn main() {
-    let mut users: HashSet<Player> = HashSet::new();
-    player_add_hash(&mut users);
+fn show_active_players(players: &HashSet<Player>) {
     println!("Current players.");
     for i in users {
         println!("{}", i.show_player());
