@@ -1,3 +1,6 @@
+use colorful::{
+    Colorful
+};
 pub fn clear_screen() {
     print!("\x1B[2J\x1B[1;1H");
 }
@@ -18,14 +21,5 @@ pub fn mv(line: usize, col: usize) {
     print!("\x1b[{};{}H", col, line);
 }
 pub fn yesorno() {
-    set_color("white");
-    print!("(");
-    set_color("green");
-    print!("y");
-    set_color("white");
-    print!("/");
-    set_color("red");
-    print!("N");
-    set_color("white");
-    print!("): ");
+    print!("[{}/{}]: ","y".light_gray(), "N".cyan());
 }

@@ -21,7 +21,7 @@ pub struct Player {
     //password: String,
 }
 impl Player {
-    pub fn ask_new_usr() -> Player {
+    pub fn ask_new_plyr() -> Player {
         loop {
             let mut nam = String::new();
             let mut rac = Race::NonExistent;
@@ -58,7 +58,7 @@ impl Player {
                 name: nam,
                 race: rac
             };
-            println!("Here's the gathered data.\n{}Is this ok? ", result.show_player());
+            print!("Here's the gathered data.\n{}\nIs this ok? ", result.show_player());
             help::yesorno();
             io::stdout().flush().unwrap();
             let mut opcstr = String::new();
@@ -79,7 +79,6 @@ impl Player {
             Race::ORC => "Orc",
             Race::NonExistent => "Literally nothing",
         });
-        ret.push_str("\n");
         ret
     }
 }

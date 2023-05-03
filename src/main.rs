@@ -9,7 +9,7 @@ use {
             Write
         }
     },
-    player::Player
+    player::Player,
 };
 fn player_add_hash(users: &mut HashSet<Player>) {
     loop {
@@ -20,7 +20,7 @@ fn player_add_hash(users: &mut HashSet<Player>) {
         let mut opcstr = String::new();
         io::stdin().read_line(&mut opcstr).unwrap();
         if let Ok('y') = opcstr.to_ascii_lowercase().trim().parse::<char>() {
-            users.insert(Player::ask_new_usr());
+            users.insert(Player::ask_new_plyr());
         } else {
             help::clear_screen();
             println!("Ok. You can create another user later on by pressing Ctrl + N");
@@ -32,9 +32,17 @@ fn player_add_hash(users: &mut HashSet<Player>) {
     }
 }
 fn show_active_players(players: &HashSet<Player>) {
+    if players.is_empty() {
+        return;
+    }
     println!("Current players.");
-    for i in users {
-        println!("{}", i.show_player());
+    for (n, i) in players.iter().enumerate() {
+        println!("\nPlayer {}\n{}", 1 + n, i.show_player());
         println!("");
     }
+}
+fn main() {
+    let mut players: HashSet<Player> = HashSet::new();
+    player_add_hash(&mut players);
+    show_active_players(&players);
 }
