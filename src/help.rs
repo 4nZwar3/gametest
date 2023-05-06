@@ -1,5 +1,11 @@
-use colorful::{
-    Colorful
+use {
+    std::io::{
+        self,
+        Write
+    },
+    colorful::{
+        Colorful
+    }
 };
 pub fn clear_screen() {
     print!("\x1B[2J\x1B[1;1H");
@@ -21,5 +27,24 @@ pub fn mv(line: usize, col: usize) {
     print!("\x1b[{};{}H", col, line);
 }
 pub fn yesorno() {
-    print!("[{}/{}]: ","y".light_gray(), "N".cyan());
+    print!("[{}/{}]: ","y".dark_gray(), "N".cyan());
+}
+pub fn get_char() {
+    let mut input = String::new();
+    let _ = io::stdin().read_line(&mut input);
+}
+pub fn answer() -> bool {
+    let mut opc = String::new();
+    io::stdin().read_line(&mut opc).unwrap();
+    if let Ok('y') = opc.to_ascii_lowercase().trim().parse::<char>() {
+        return true;
+    };
+    false
+}
+pub fn read_something(something: &str, place: &mut String) {
+    clear_screen();
+    print!("Insert {}: ", something);
+    io::stdout().flush().expect("Error while flushing.");
+    io::stdin().read_line(place).expect("Error while reading something.");
+    *place = place.trim().to_string();
 }

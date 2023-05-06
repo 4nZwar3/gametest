@@ -17,15 +17,12 @@ fn player_add_hash(users: &mut HashSet<Player>) {
         print!("Do you wish to create a new player? ");
         help::yesorno();
         io::stdout().flush().unwrap();
-        let mut opcstr = String::new();
-        io::stdin().read_line(&mut opcstr).unwrap();
-        if let Ok('y') = opcstr.to_ascii_lowercase().trim().parse::<char>() {
+        if help::answer() {
             users.insert(Player::ask_new_plyr());
         } else {
             help::clear_screen();
             println!("Ok. You can create another user later on by pressing Ctrl + N");
-            let mut input = String::new();
-            let _ = io::stdin().read_line(&mut input);
+            help::get_char();
             help::clear_screen();
             break;
         }
@@ -36,10 +33,10 @@ fn show_active_players(players: &HashSet<Player>) {
         return;
     }
     println!("Current players.");
-    for (n, i) in players.iter().enumerate() {
-        println!("\nPlayer {}\n{}", 1 + n, i.show_player());
-        println!("");
+    for player in players.iter() {
+        println!("\n{}\nRace: {}", player.name, player.show_race());
     }
+    print!("\n");
 }
 fn main() {
     let mut players: HashSet<Player> = HashSet::new();

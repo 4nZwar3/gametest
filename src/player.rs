@@ -12,73 +12,95 @@ pub enum Race {
     HUMAN,
     ELF,
     ORC,
-    NonExistent
 }
 #[derive(PartialEq, Eq, Hash)]
 pub struct Player {
     pub name: String,
     pub race: Race,
-    //password: String,
+    password: String,
 }
 impl Player {
-    pub fn ask_new_plyr() -> Player {
+    fn ask_new_nam() -> String {
+        let mut nam = String::new();
+        help::read_something("name", &mut nam);
+        nam
+    }
+    fn ask_new_rac() -> Race {
         loop {
-            let mut nam = String::new();
-            let mut rac = Race::NonExistent;
             help::clear_screen();
-            print!("Insert your character's name: ");
-            io::stdout().flush().unwrap();
-            io::stdin().read_line(&mut nam).unwrap();
-            nam = nam.trim().to_string();
-            while rac == Race::NonExistent {
-                help::clear_screen();
-                print!("Enter your character's race\n1)\tHuman\n2)\tElf\n3)\tOrc\nSelect your option: ");
-                io::stdout().flush().unwrap();
-                let mut racstr = String::new();
-                io::stdin().read_line(&mut racstr).unwrap();
-                match racstr.trim().parse::<i32>() {
-                    Ok(num) => match num {
-                        1 => rac = Race::HUMAN,
-                        2 => rac = Race::ELF,
-                        3 => rac = Race::ORC,
-                        _ => {
-                            help::clear_screen();
-                            println!("NOT A RACE!!");
-                            continue;
-                        }
-                    },
-                    Err(_) => {
+            print!("Enter your character's race\n1)\tHuman\n2)\tElf\n3)\tOrc\nSelect your option: ");
+            io::stdout().flush().expect("Error while flushing race menu.");
+            let mut racstr = String::new();
+            io::stdin().read_line(&mut racstr).expect("Failed reading race from user.");
+            match racstr.trim().parse::<i32>() {
+                Ok(num) => match num {
+                    1 => return Race::HUMAN,
+                    2 => return Race::ELF,
+                    3 => return Race::ORC,
+                    _ => {
                         help::clear_screen();
-                        println!("Insert the number at the left of the option...");
+                        println!("NOT A RACE!!");
+                        help::get_char();
+                        continue;
                     }
+                },
+                Err(_) => {
+                    help::clear_screen();
+                    println!("Insert the number at the left of the option...");
+                    help::get_char();
+                    continue;
                 }
             }
+        }
+    }
+    fn ask_new_pas() -> String {
+        loop {
+            let mut pas = String::new();
+            let mut conf = String::new();
+            help::read_something("password", &mut pas);
+            help::read_something("password confirmation", &mut conf);
             help::clear_screen();
-            let result = Player {
-                name: nam,
-                race: rac
-            };
+            if !pas.eq(&conf) {
+                println!("Passwords don't match, try again.");
+                help::get_char();
+                continue;
+            }
+            print!("Are you sure you want to set your password to {}? ", pas.trim());
+            help::yesorno();
+            io::stdout().flush().expect("Error while flushing on password confirmation");
+            if !help::answer() {
+                continue;
+            }
+            return pas.trim().to_string();
+        }
+    }
+    pub fn from(nam: String, rac: Race, pas: String) -> Player {
+        Player {
+            name: nam,
+            race: rac,
+            password: pas
+        }
+    }
+    pub fn ask_new_plyr() -> Player {
+        loop {
+            let result = Player::from(Self::ask_new_nam(), Self::ask_new_rac(), Self::ask_new_pas());
+            help::clear_screen();
             print!("Here's the gathered data.\n{}\nIs this ok? ", result.show_player());
             help::yesorno();
-            io::stdout().flush().unwrap();
-            let mut opcstr = String::new();
-            io::stdin().read_line(&mut opcstr).unwrap();
-            if let Ok('y') = opcstr.to_ascii_lowercase().trim().parse::<char>() {
+            io::stdout().flush().expect("Failed to flush after asking if the player received was correct.");
+            if help::answer() {
                 return result;
             }
         }
     }
-    pub fn show_player(&self) -> String {
-        let mut ret = String::new();
-        ret.push_str("Name: ");
-        ret.push_str(self.name.as_str());
-        ret.push_str("\nRace: ");
-        ret.push_str(match self.race {
+    pub fn show_race(&self) -> String {
+        String::from(match self.race {
             Race::HUMAN => "Human",
             Race::ELF => "Elf",
             Race::ORC => "Orc",
-            Race::NonExistent => "Literally nothing",
-        });
-        ret
+        })
+    }
+    pub fn show_player(&self) -> String {
+        String::from("Name: ".to_owned() + self.name.as_str() + "\nRace: " + self.show_race().as_str())
     }
 }
